@@ -3,42 +3,57 @@ import galerySRC from "./app.js";
 const galeryEl = document.querySelector(".js-gallery");
 const modal = document.querySelector(".lightbox");
 const modalImg = document.querySelector(".lightbox__image");
-const modalOveray = document.querySelector("lightbox__overlay");
+// const modalOveray = document.querySelector("lightbox__overlay");
+const closeBtn = document.querySelector('[data-action="close-lightbox"]');
 
-const imgArray = galerySRC.reduce(
-  (acc, image) =>
-    acc +
-    `<li class = 'gallery__item'> 
+// створити галерею
+function imgArray(galerySRC) {
+  return galerySRC
+    .map(
+      (img) =>
+        `<li class = 'gallery__item'> 
 
-   <a    class="gallery__link"
-   href = "${image.original}">
+ <a    class="gallery__link"
+href = "${img.original}">
 
     <img class = 'gallery__image' 
-    src = "${image.preview}"
-    data-source = "${image.original}"
-    alt = "${image.description}"
-    >`,
-  ""
-);
+    src = "${img.preview}"
+    data-source = "${img.original}"
+    alt = "${img.description}"
+    />
+    </a>
+    </li>`
+    )
+    .join("");
+}
 
-const imagesRef = galeryEl.insertAdjacentHTML("afterbegin", imgArray);
-// galeryEl.forEach((element) => {
-//   element.addEventListener("click", function (e) {
-//     modalRef.classList.add("is-open");
-//     modalContentRef.src = element.dataset.source;
-//   });
-// });
+galeryEl.insertAdjacentHTML("afterbegin", imgArray(galerySRC));
 
+// відкрити модалку
 const openModal = (e) => {
   const imgTarget = e.target;
   if (!imgTarget.classList.contains("gallery__image")) {
     return;
   }
   e.preventDefault();
-  // window.addEventListener("keydown", onEscKeyPress);
-  // window.addEventListener("keydown", onArrowKeyPress);
+
   modal.classList.add("is-open");
   modalImg.src = imgTarget.dataset.source;
   modalImg.alt = imgTarget.alt;
 };
 galeryEl.addEventListener("click", openModal);
+
+// закрити модалку
+const closeModal = () => {
+  window.removeEventListener("keydown", onEscPres);
+  modal.classList.remove("is-open");
+  modalImg.src = "";
+  modalImg.alt = "";
+};
+const onEscPres = (e) => {
+  if (e.code === "Escape") {
+    closeModal();
+  }
+};
+
+closeBtn.addEventListener("click", closeModal);
